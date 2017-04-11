@@ -214,9 +214,9 @@ run_balance_task(void)
 
     // what is the target for the COG?
     bzero((void *)&cog_target,sizeof(cog_target));
-    cog_target.x[_X_] = ??;
-    cog_target.x[_Y_] = ??;
-    cog_target.x[_Z_] = ??;
+    // cog_target.x[_X_] = ??;
+    // cog_target.x[_Y_] = ??;
+    // cog_target.x[_Z_] = ??;
 
     // the structure cog_des has the current position of the COG computed from the
     // joint_des_state of the robot. cog_des should track cog_traj
@@ -262,8 +262,8 @@ run_balance_task(void)
       joint_des_state[i].thdd = 0;
       joint_des_state[i].uff  = 0;
 
-      joint_des_state[i].thd = ?;
-      joint_des_state[i].thd = ?;
+      // joint_des_state[i].thd = ?;
+      // joint_des_state[i].thd = ?;
 
     }
 
@@ -308,6 +308,7 @@ run_balance_task(void)
     time_to_go -= delta_t;
 
     if (time_to_go <= 0)
+    {
       freeze();
 
     }
