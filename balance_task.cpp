@@ -196,6 +196,7 @@ run_balance_task(void)
 
   double task_time;
   double kp = 0.1;
+  double duration_scale = 1.0;
 
   // ******************************************
   // NOTE: all array indices start with 1 in SL
@@ -299,7 +300,24 @@ run_balance_task(void)
     for (i=1; i<=N_DOFS; ++i)
       target[i] = joint_des_state[i];
 
-    time_to_go = duration;  // this may be too fast -- maybe a slower movement is better
+#if 1
+    target[L_HAA].th -= 0.4;
+    target[L_AAA].th  = 0.5;
+    target[R_HAA].th -= 0.25;
+    target[R_AAA].th += 0.05;
+#endif
+
+    stat[LEFT_FOOT][1] = FALSE;
+    stat[LEFT_FOOT][2] = FALSE;
+    stat[LEFT_FOOT][3] = FALSE;
+    stat[LEFT_FOOT][4] = FALSE;
+    stat[LEFT_FOOT][5] = FALSE;
+    stat[LEFT_FOOT][6] = FALSE;
+
+    duration_scale = 1.0;
+    // duration_scale = 5.0;
+
+    time_to_go = duration_scale * duration;  // this may be too fast -- maybe a slower movement is better
 
     which_step = MOVE_JOINT_TARGET_LIFT_UP;
 
@@ -335,9 +353,11 @@ run_balance_task(void)
 
   }
 
-  // this is a special inverse dynamics computation for a free standing robot
-  inverseDynamicsFloat(delta_t, stat, TRUE, joint_des_state, NULL, NULL, fc);
-
+  if (MOVE_JOINT_TARGET_LIFT_UP != which_step)
+  {
+      // this is a special inverse dynamics computation for a free standing robot
+      inverseDynamicsFloat(delta_t, stat, TRUE, joint_des_state, NULL, NULL, fc);
+  }
 
   return TRUE;
 }
