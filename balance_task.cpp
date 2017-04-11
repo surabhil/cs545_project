@@ -144,6 +144,8 @@ init_balance_task(void)
   for (i=1; i<=N_DOFS; i++)
     target[i] = joint_default_state[i];
 
+  // TODO: set better initial position before shifting cog?
+
   // go to the target using inverse dynamics (ID)
   if (!go_target_wait_ID(target)) 
     return FALSE;
@@ -214,9 +216,12 @@ run_balance_task(void)
 
     // what is the target for the COG?
     bzero((void *)&cog_target,sizeof(cog_target));
-    // cog_target.x[_X_] = ??;
-    // cog_target.x[_Y_] = ??;
-    // cog_target.x[_Z_] = ??;
+
+    // where_cog for target when on right foot:
+    // 0.054 ( 0.055)   y= 0.012 ( 0.014)   z=-0.119 (-0.117)
+    cog_target.x[_X_] =  0.054;
+    cog_target.x[_Y_] =  0.012;
+    cog_target.x[_Z_] = -0.119;
 
     // the structure cog_des has the current position of the COG computed from the
     // joint_des_state of the robot. cog_des should track cog_traj
@@ -265,6 +270,19 @@ run_balance_task(void)
       // joint_des_state[i].thd = ?;
       // joint_des_state[i].thd = ?;
 
+    }
+
+    for (int rowIdx = 1; rowIdx <= N_DOFS; rowIdx++)
+    {
+        for (int colIdx = 1; colIdx <= N_CART; colIdx++)
+        {
+            joint_des_state[rowIdx].thd += Jccogp[rowIdx][colIdx] * cog_ref.xd[colIdx];
+        }
+    }
+
+    for (int rowIdx = 1; rowIdx <= N_DOFS; rowIdx++)
+    {
+        joint_des_state[rowIdx].th += joint_des_state[rowIdx].thd * delta_t;
     }
 
     // decrement time to go
