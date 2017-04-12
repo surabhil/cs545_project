@@ -219,7 +219,8 @@ run_balance_task(void)
     bzero((void *)&cog_target,sizeof(cog_target));
     cog_target.x[_X_] = cart_des_state[RIGHT_FOOT].x[_X_];
     cog_target.x[_Y_] = cart_des_state[RIGHT_FOOT].x[_Y_];
-    cog_target.x[_Z_] = 0;
+    cog_target.x[_Z_] = cart_des_state[RIGHT_FOOT].x[_Z_];
+    //cog_target.x[_Z_] = 0;
 
     // the structure cog_des has the current position of the COG computed from the
     // joint_des_state of the robot. cog_des should track cog_traj
@@ -269,8 +270,6 @@ run_balance_task(void)
       joint_des_state[i].th  += delta_thd[i] * delta_t;
       joint_des_state[i].thdd = 0;
       joint_des_state[i].uff  = 0;
-
-
     }
     // this is an indicator which Cartesian components of the endeffectors are constraints
     // i.e., both feet are on the ground and cannot move in position or orientation
@@ -304,6 +303,12 @@ run_balance_task(void)
     for (i=1; i<=N_DOFS; ++i)
       target[i] = joint_des_state[i];
 
+    target[L_HFE].th =  0.68;
+    target[L_HAA].th = -0.1;
+    target[L_KFE].th =  0.95;
+    target[L_AFE].th =  0.28;
+    target[L_AAA].th =  0.20;
+
     time_to_go = duration;  // this may be too fast -- maybe a slower movement is better
 
     which_step = MOVE_JOINT_TARGET_LIFT_UP;
@@ -327,6 +332,7 @@ run_balance_task(void)
 			 &(joint_des_state[i].thdd));
     }
 
+    SL_InvDynNE(joint_state,joint_des_state,endeff,&base_state,&base_orient);
     // decrement time to go
     time_to_go -= delta_t;
 
