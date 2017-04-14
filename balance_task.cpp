@@ -29,6 +29,7 @@ Remarks:
 // local variables
 static double      start_time = 0.0;
 static SL_DJstate  target[N_DOFS+1];
+static SL_DJstate  saved_target[N_DOFS+1];
 static SL_Cstate   cog_target;
 static SL_Cstate   cog_traj;
 static SL_Cstate   cog_ref;
@@ -174,6 +175,7 @@ init_balance_task(void)
   // state machine starts at ASSIGN_COG_TARGET
   which_step = ASSIGN_COG_TARGET;
   balance_foot = RIGHT_FOOT;
+  // balance_foot = LEFT_FOOT;
 
   return TRUE;
 }
@@ -295,6 +297,8 @@ run_balance_task(void)
     time_to_go -= delta_t;
     if (time_to_go <= 0) {
       which_step = ASSIGN_JOINT_TARGET_LIFT_UP;
+
+      
     }
 
     break;
@@ -307,11 +311,11 @@ run_balance_task(void)
 
     if (RIGHT_FOOT == balance_foot)
     {
-        target[L_HAA].th -= 0.4;
-        target[L_AAA].th  = 0.5;
+        target[L_HAA].th -=  0.4;
+        target[L_AAA].th  =  0.5;
 
-        target[R_HAA].th -= 0.25;
-        target[R_AAA].th += 0.05;
+        target[R_HAA].th -=  0.25;
+        target[R_AAA].th +=  0.05;
 
         stat[LEFT_FOOT][1] = FALSE;
         stat[LEFT_FOOT][2] = FALSE;
@@ -329,11 +333,11 @@ run_balance_task(void)
     }
     else
     {
-        target[R_HAA].th -= 0.4;
-        target[R_AAA].th  = 0.5;
+        target[R_HAA].th -=  0.4;
+        target[R_AAA].th  = -0.5;
 
-        target[L_HAA].th -= 0.25;
-        target[L_AAA].th += 0.05;
+        target[L_HAA].th -=  0.25;
+        target[L_AAA].th -=  0.05;
 
         stat[RIGHT_FOOT][1] = FALSE;
         stat[RIGHT_FOOT][2] = FALSE;
@@ -381,8 +385,31 @@ run_balance_task(void)
 
     if (time_to_go <= 0)
     {
-      freeze();
+        freeze();
+        // which_step = ASSIGN_JOINT_TARGET_LOWER_DOWN;
+    }
 
+    break;
+
+    case ASSIGN_JOINT_TARGET_LOWER_DOWN:
+
+    // decrement time to go
+    time_to_go -= delta_t;
+
+    if (time_to_go <= 0)
+    {
+      which_step = MOVE_JOINT_TARGET_LOWER_DOWN;
+    }
+
+    break;
+
+    case MOVE_JOINT_TARGET_LOWER_DOWN:
+
+    if (time_to_go <= 0)
+    {
+      // freeze();
+      which_step = ASSIGN_COG_TARGET;
+      balance_foot = (RIGHT_FOOT == balance_foot) ? LEFT_FOOT : RIGHT_FOOT;
     }
 
     break;
