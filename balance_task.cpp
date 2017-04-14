@@ -46,7 +46,9 @@ enum Steps {
   ASSIGN_JOINT_TARGET_LIFT_UP,
   MOVE_JOINT_TARGET_LIFT_UP,
   ASSIGN_JOINT_TARGET_LOWER_DOWN,
-  MOVE_JOINT_TARGET_LOWER_DOWN
+  MOVE_JOINT_TARGET_LOWER_DOWN,
+  ASSIGN_RETURN_CENTER,
+  MOVE_RETURN_CENTER
 };
 
 // variables for COG control
@@ -227,8 +229,8 @@ run_balance_task(void)
     // where_cog for target when on right foot:
     // 0.054 ( 0.055)   y= 0.012 ( 0.014)   z=-0.119 (-0.117)
 
-    // cog_target.x[_X_] =  (RIGHT_FOOT == balance_foot) ? 0.054 : -0.054;
-    cog_target.x[_X_] =  (RIGHT_FOOT == balance_foot) ? 0.04 : -0.04;
+    cog_target.x[_X_] =  (RIGHT_FOOT == balance_foot) ? 0.054 : -0.054;
+    // cog_target.x[_X_] =  (RIGHT_FOOT == balance_foot) ? 0.04 : -0.04;
     cog_target.x[_Y_] =  0.012;
     cog_target.x[_Z_] = -0.119;
 
@@ -433,7 +435,7 @@ run_balance_task(void)
     if (time_to_go <= 0)
     {
       // freeze();
-      which_step = ASSIGN_COG_TARGET;
+      which_step = ASSIGN_RETURN_CENTER;
       balance_foot = (RIGHT_FOOT == balance_foot) ? LEFT_FOOT : RIGHT_FOOT;
 
       stat[RIGHT_FOOT][1] = TRUE;
@@ -453,6 +455,46 @@ run_balance_task(void)
 
     break;
 
+  case ASSIGN_RETURN_CENTER:
+    // prepare going to the default posture
+    bzero((char *)&(target[1]),N_DOFS*sizeof(target[1]));
+    for (i=1; i<=N_DOFS; i++)
+        target[i] = joint_default_state[i];
+
+    duration_scale = 1.0;
+    // duration_scale = 5.0;
+
+    time_to_go = duration_scale * duration;  // this may be too fast -- maybe a slower movement is better
+    which_step = MOVE_RETURN_CENTER;
+
+    break;
+
+  case MOVE_RETURN_CENTER:
+
+    // compute the update for the desired states
+    for (i=1; i<=N_DOFS; ++i) {
+      min_jerk_next_step(joint_des_state[i].th,
+			 joint_des_state[i].thd,
+			 joint_des_state[i].thdd,
+			 target[i].th,
+			 target[i].thd,
+			 target[i].thdd,
+			 time_to_go,
+			 delta_t,
+			 &(joint_des_state[i].th),
+			 &(joint_des_state[i].thd),
+			 &(joint_des_state[i].thdd));
+    }
+
+    // decrement time to go
+    time_to_go -= delta_t;
+
+    if (time_to_go <= 0)
+    {
+        which_step = ASSIGN_COG_TARGET;
+    }
+
+    break;
   }
 
   // if ((MOVE_JOINT_TARGET_LIFT_UP != which_step) && (MOVE_JOINT_TARGET_LOWER_DOWN != which_step))
