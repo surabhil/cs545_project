@@ -36,13 +36,16 @@ static double      delta_t = 0.01;
 static double      duration = 10.0;
 static double      time_to_go;
 static int         which_step;
+static int         balance_foot;
 
 // possible states of a state machine
 enum Steps {
   ASSIGN_COG_TARGET,
   MOVE_TO_COG_TARGET,
   ASSIGN_JOINT_TARGET_LIFT_UP,
-  MOVE_JOINT_TARGET_LIFT_UP
+  MOVE_JOINT_TARGET_LIFT_UP,
+  ASSIGN_JOINT_TARGET_LOWER_DOWN,
+  MOVE_JOINT_TARGET_LOWER_DOWN
 };
 
 // variables for COG control
@@ -170,6 +173,7 @@ init_balance_task(void)
 
   // state machine starts at ASSIGN_COG_TARGET
   which_step = ASSIGN_COG_TARGET;
+  balance_foot = RIGHT_FOOT;
 
   return TRUE;
 }
@@ -220,7 +224,8 @@ run_balance_task(void)
 
     // where_cog for target when on right foot:
     // 0.054 ( 0.055)   y= 0.012 ( 0.014)   z=-0.119 (-0.117)
-    cog_target.x[_X_] =  0.054;
+
+    cog_target.x[_X_] =  (RIGHT_FOOT == balance_foot) ? 0.054 : -0.054;
     cog_target.x[_Y_] =  0.012;
     cog_target.x[_Z_] = -0.119;
 
@@ -300,19 +305,50 @@ run_balance_task(void)
     for (i=1; i<=N_DOFS; ++i)
       target[i] = joint_des_state[i];
 
-#if 1
-    target[L_HAA].th -= 0.4;
-    target[L_AAA].th  = 0.5;
-    target[R_HAA].th -= 0.25;
-    target[R_AAA].th += 0.05;
-#endif
+    if (RIGHT_FOOT == balance_foot)
+    {
+        target[L_HAA].th -= 0.4;
+        target[L_AAA].th  = 0.5;
 
-    stat[LEFT_FOOT][1] = FALSE;
-    stat[LEFT_FOOT][2] = FALSE;
-    stat[LEFT_FOOT][3] = FALSE;
-    stat[LEFT_FOOT][4] = FALSE;
-    stat[LEFT_FOOT][5] = FALSE;
-    stat[LEFT_FOOT][6] = FALSE;
+        target[R_HAA].th -= 0.25;
+        target[R_AAA].th += 0.05;
+
+        stat[LEFT_FOOT][1] = FALSE;
+        stat[LEFT_FOOT][2] = FALSE;
+        stat[LEFT_FOOT][3] = FALSE;
+        stat[LEFT_FOOT][4] = FALSE;
+        stat[LEFT_FOOT][5] = FALSE;
+        stat[LEFT_FOOT][6] = FALSE;
+
+        stat[RIGHT_FOOT][1] = TRUE;
+        stat[RIGHT_FOOT][2] = TRUE;
+        stat[RIGHT_FOOT][3] = TRUE;
+        stat[RIGHT_FOOT][4] = TRUE;
+        stat[RIGHT_FOOT][5] = TRUE;
+        stat[RIGHT_FOOT][6] = TRUE;
+    }
+    else
+    {
+        target[R_HAA].th -= 0.4;
+        target[R_AAA].th  = 0.5;
+
+        target[L_HAA].th -= 0.25;
+        target[L_AAA].th += 0.05;
+
+        stat[RIGHT_FOOT][1] = FALSE;
+        stat[RIGHT_FOOT][2] = FALSE;
+        stat[RIGHT_FOOT][3] = FALSE;
+        stat[RIGHT_FOOT][4] = FALSE;
+        stat[RIGHT_FOOT][5] = FALSE;
+        stat[RIGHT_FOOT][6] = FALSE;
+
+        stat[LEFT_FOOT][1] = TRUE;
+        stat[LEFT_FOOT][2] = TRUE;
+        stat[LEFT_FOOT][3] = TRUE;
+        stat[LEFT_FOOT][4] = TRUE;
+        stat[LEFT_FOOT][5] = TRUE;
+        stat[LEFT_FOOT][6] = TRUE;
+    }
 
     duration_scale = 1.0;
     // duration_scale = 5.0;
