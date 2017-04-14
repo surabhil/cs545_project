@@ -387,8 +387,8 @@ run_balance_task(void)
 
     if (time_to_go <= 0)
     {
-        freeze();
-        // which_step = ASSIGN_JOINT_TARGET_LOWER_DOWN;
+        // freeze();
+        which_step = ASSIGN_JOINT_TARGET_LOWER_DOWN;
     }
 
     break;
@@ -411,6 +411,24 @@ run_balance_task(void)
 
   case MOVE_JOINT_TARGET_LOWER_DOWN:
 
+    // compute the update for the desired states
+    for (i=1; i<=N_DOFS; ++i) {
+      min_jerk_next_step(joint_des_state[i].th,
+			 joint_des_state[i].thd,
+			 joint_des_state[i].thdd,
+			 target[i].th,
+			 target[i].thd,
+			 target[i].thdd,
+			 time_to_go,
+			 delta_t,
+			 &(joint_des_state[i].th),
+			 &(joint_des_state[i].thd),
+			 &(joint_des_state[i].thdd));
+    }
+
+    // decrement time to go
+    time_to_go -= delta_t;
+
     if (time_to_go <= 0)
     {
       // freeze();
@@ -422,7 +440,8 @@ run_balance_task(void)
 
   }
 
-  if (MOVE_JOINT_TARGET_LIFT_UP != which_step)
+  // if ((MOVE_JOINT_TARGET_LIFT_UP != which_step) && (MOVE_JOINT_TARGET_LOWER_DOWN != which_step))
+  if (MOVE_JOINT_TARGET_LIFT_UP > which_step)
   {
       // this is a special inverse dynamics computation for a free standing robot
       inverseDynamicsFloat(delta_t, stat, TRUE, joint_des_state, NULL, NULL, fc);
