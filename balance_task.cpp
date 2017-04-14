@@ -298,7 +298,9 @@ run_balance_task(void)
     if (time_to_go <= 0) {
       which_step = ASSIGN_JOINT_TARGET_LIFT_UP;
 
-      
+      // save current state to return leg to ground
+      for (i=1; i<=N_DOFS; ++i)
+          saved_target[i] = joint_des_state[i];
     }
 
     break;
@@ -391,19 +393,23 @@ run_balance_task(void)
 
     break;
 
-    case ASSIGN_JOINT_TARGET_LOWER_DOWN:
+  case ASSIGN_JOINT_TARGET_LOWER_DOWN:
 
-    // decrement time to go
-    time_to_go -= delta_t;
+    // initialize the target structure from the saved target with both legs
+    // on the ground
+    for (i=1; i<=N_DOFS; ++i)
+        target[i] = saved_target[i];
 
-    if (time_to_go <= 0)
-    {
-      which_step = MOVE_JOINT_TARGET_LOWER_DOWN;
-    }
+    duration_scale = 1.0;
+    // duration_scale = 5.0;
+
+    time_to_go = duration_scale * duration;  // this may be too fast -- maybe a slower movement is better
+
+    which_step = MOVE_JOINT_TARGET_LOWER_DOWN;
 
     break;
 
-    case MOVE_JOINT_TARGET_LOWER_DOWN:
+  case MOVE_JOINT_TARGET_LOWER_DOWN:
 
     if (time_to_go <= 0)
     {
