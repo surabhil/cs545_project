@@ -434,6 +434,20 @@ run_balance_task(void)
       // freeze();
       which_step = ASSIGN_COG_TARGET;
       balance_foot = (RIGHT_FOOT == balance_foot) ? LEFT_FOOT : RIGHT_FOOT;
+
+      stat[RIGHT_FOOT][1] = TRUE;
+      stat[RIGHT_FOOT][2] = TRUE;
+      stat[RIGHT_FOOT][3] = TRUE;
+      stat[RIGHT_FOOT][4] = TRUE;
+      stat[RIGHT_FOOT][5] = TRUE;
+      stat[RIGHT_FOOT][6] = TRUE;
+
+      stat[LEFT_FOOT][1] = TRUE;
+      stat[LEFT_FOOT][2] = TRUE;
+      stat[LEFT_FOOT][3] = TRUE;
+      stat[LEFT_FOOT][4] = TRUE;
+      stat[LEFT_FOOT][5] = TRUE;
+      stat[LEFT_FOOT][6] = TRUE;
     }
 
     break;
