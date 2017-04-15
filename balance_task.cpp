@@ -38,6 +38,7 @@ static double      delta_t = 0.01;
 static double      duration = 10.0;
 static double      time_to_go;
 static int         which_step;
+static int         init_balance_foot = RIGHT_FOOT;
 static int         balance_foot;
 static int         iter;
 
@@ -178,8 +179,7 @@ init_balance_task(void)
 
   // state machine starts at ASSIGN_COG_TARGET
   which_step = ASSIGN_COG_TARGET;
-  balance_foot = RIGHT_FOOT;
-  // balance_foot = LEFT_FOOT;
+  balance_foot = init_balance_foot;
 
   iter = 0;
 
@@ -534,7 +534,12 @@ run_balance_task(void)
     if (time_to_go <= 0)
     {
         which_step = ASSIGN_COG_TARGET;
-        iter++;
+
+        // increment counter if we have gone back to initial balance foot
+        if (init_balance_foot == balance_foot)
+        {
+            iter++;
+        }
     }
 
     break;
