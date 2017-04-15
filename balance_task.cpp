@@ -39,6 +39,7 @@ static double      duration = 10.0;
 static double      time_to_go;
 static int         which_step;
 static int         balance_foot;
+static int         iter;
 
 // possible states of a state machine
 enum Steps {
@@ -180,6 +181,8 @@ init_balance_task(void)
   balance_foot = RIGHT_FOOT;
   // balance_foot = LEFT_FOOT;
 
+  iter = 0;
+
   return TRUE;
 }
 
@@ -225,7 +228,7 @@ run_balance_task(void)
   case ASSIGN_COG_TARGET:
 
 #ifdef VERBOSE_LOG
-    printf("assign cog target\n");
+    printf("assign cog target iter %d\n", iter);
 #endif
 
     // what is the target for the COG?
@@ -255,7 +258,7 @@ run_balance_task(void)
   case MOVE_TO_COG_TARGET: // this is for inverse kinematics control
 
 #ifdef VERBOSE_LOG
-    printf("move cog target\n");
+    printf("move cog target iter %d\n", iter);
 #endif
 
     // plan the next step of cog with min jerk
@@ -319,7 +322,7 @@ run_balance_task(void)
   case ASSIGN_JOINT_TARGET_LIFT_UP:
 
 #ifdef VERBOSE_LOG
-    printf("assign joint target lift up\n");
+    printf("assign joint target lift up iter %d\n", iter);
 #endif
 
     // initialize the target structure from the joint_des_state
@@ -389,7 +392,7 @@ run_balance_task(void)
   case MOVE_JOINT_TARGET_LIFT_UP:
 
 #ifdef VERBOSE_LOG
-    printf("move joint target lift up\n");
+    printf("move joint target lift up iter %d\n", iter);
 #endif
 
     // compute the update for the desired states
@@ -421,7 +424,7 @@ run_balance_task(void)
   case ASSIGN_JOINT_TARGET_LOWER_DOWN:
 
 #ifdef VERBOSE_LOG
-    printf("assign joint target lower down\n");
+    printf("assign joint target lower down iter %d\n", iter);
 #endif
 
     // initialize the target structure from the saved target with both legs
@@ -441,7 +444,7 @@ run_balance_task(void)
   case MOVE_JOINT_TARGET_LOWER_DOWN:
 
 #ifdef VERBOSE_LOG
-    printf("move joint target lower down\n");
+    printf("move joint target lower down iter %d\n", iter);
 #endif
 
     // compute the update for the desired states
@@ -488,7 +491,7 @@ run_balance_task(void)
   case ASSIGN_RETURN_CENTER:
 
 #ifdef VERBOSE_LOG
-    printf("assign return center\n");
+    printf("assign return center iter %d\n", iter);
 #endif
 
     // prepare going to the default posture
@@ -507,7 +510,7 @@ run_balance_task(void)
   case MOVE_RETURN_CENTER:
 
 #ifdef VERBOSE_LOG
-    printf("move return center\n");
+    printf("move return center iter %d\n", iter);
 #endif
 
     // compute the update for the desired states
@@ -531,6 +534,7 @@ run_balance_task(void)
     if (time_to_go <= 0)
     {
         which_step = ASSIGN_COG_TARGET;
+        iter++;
     }
 
     break;
