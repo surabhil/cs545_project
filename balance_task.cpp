@@ -208,7 +208,11 @@ run_balance_task(void)
 
   double task_time;
   double kp = 0.1;
+
   double duration_scale = 1.0;
+
+  double forward_offset = 0.00;
+  // double forward_offset = 0.02;
 
   // ******************************************
   // NOTE: all array indices start with 1 in SL
@@ -238,7 +242,7 @@ run_balance_task(void)
     // 0.054 ( 0.055)   y= 0.012 ( 0.014)   z=-0.119 (-0.117)
     cog_target.x[_X_] =  (RIGHT_FOOT == balance_foot) ? base_state.x[_X_] + 0.054 : base_state.x[_X_] + -0.054;
     // cog_target.x[_X_] =  (RIGHT_FOOT == balance_foot) ? 0.04 : -0.04;
-    cog_target.x[_Y_] =  base_state.x[_Y_] + 0.012;
+    cog_target.x[_Y_] =  base_state.x[_Y_] + 0.012 + forward_offset;
     cog_target.x[_Z_] =  base_state.x[_Z_] - 0.119;
 
     // the structure cog_des has the current position of the COG computed from the
