@@ -223,6 +223,8 @@ run_balance_task(void)
     
   case ASSIGN_COG_TARGET:
 
+    printf("assign cog target\n");
+
     // what is the target for the COG?
     bzero((void *)&cog_target,sizeof(cog_target));
 
@@ -249,6 +251,8 @@ run_balance_task(void)
     break;
 
   case MOVE_TO_COG_TARGET: // this is for inverse kinematics control
+
+    printf("move cog target\n");
 
     // plan the next step of cog with min jerk
     for (i=1; i<=N_CART; ++i) {
@@ -310,6 +314,8 @@ run_balance_task(void)
 
   case ASSIGN_JOINT_TARGET_LIFT_UP:
 
+    printf("assign joint target lift up\n");
+
     // initialize the target structure from the joint_des_state
     for (i=1; i<=N_DOFS; ++i)
       target[i] = joint_des_state[i];
@@ -322,12 +328,12 @@ run_balance_task(void)
         target[R_HAA].th -=  0.25;
         target[R_AAA].th +=  0.05;
 
-        stat[LEFT_FOOT][1] = FALSE;
-        stat[LEFT_FOOT][2] = FALSE;
-        stat[LEFT_FOOT][3] = FALSE;
-        stat[LEFT_FOOT][4] = FALSE;
-        stat[LEFT_FOOT][5] = FALSE;
-        stat[LEFT_FOOT][6] = FALSE;
+        // stat[LEFT_FOOT][1] = FALSE;
+        // stat[LEFT_FOOT][2] = FALSE;
+        // stat[LEFT_FOOT][3] = FALSE;
+        // stat[LEFT_FOOT][4] = FALSE;
+        // stat[LEFT_FOOT][5] = FALSE;
+        // stat[LEFT_FOOT][6] = FALSE;
 
         stat[RIGHT_FOOT][1] = TRUE;
         stat[RIGHT_FOOT][2] = TRUE;
@@ -344,12 +350,12 @@ run_balance_task(void)
         target[L_HAA].th -=  0.25;
         target[L_AAA].th -=  0.05;
 
-        stat[RIGHT_FOOT][1] = FALSE;
-        stat[RIGHT_FOOT][2] = FALSE;
-        stat[RIGHT_FOOT][3] = FALSE;
-        stat[RIGHT_FOOT][4] = FALSE;
-        stat[RIGHT_FOOT][5] = FALSE;
-        stat[RIGHT_FOOT][6] = FALSE;
+        // stat[RIGHT_FOOT][1] = FALSE;
+        // stat[RIGHT_FOOT][2] = FALSE;
+        // stat[RIGHT_FOOT][3] = FALSE;
+        // stat[RIGHT_FOOT][4] = FALSE;
+        // stat[RIGHT_FOOT][5] = FALSE;
+        // stat[RIGHT_FOOT][6] = FALSE;
 
         stat[LEFT_FOOT][1] = TRUE;
         stat[LEFT_FOOT][2] = TRUE;
@@ -369,6 +375,8 @@ run_balance_task(void)
     break;
 
   case MOVE_JOINT_TARGET_LIFT_UP:
+
+    printf("move joint target lift up\n");
 
     // compute the update for the desired states
     for (i=1; i<=N_DOFS; ++i) {
@@ -398,6 +406,8 @@ run_balance_task(void)
 
   case ASSIGN_JOINT_TARGET_LOWER_DOWN:
 
+    printf("assign joint target lower down\n");
+
     // initialize the target structure from the saved target with both legs
     // on the ground
     for (i=1; i<=N_DOFS; ++i)
@@ -413,6 +423,8 @@ run_balance_task(void)
     break;
 
   case MOVE_JOINT_TARGET_LOWER_DOWN:
+
+    printf("move joint target lower down\n");
 
     // compute the update for the desired states
     for (i=1; i<=N_DOFS; ++i) {
@@ -456,6 +468,9 @@ run_balance_task(void)
     break;
 
   case ASSIGN_RETURN_CENTER:
+
+    printf("assign return center\n");
+
     // prepare going to the default posture
     bzero((char *)&(target[1]),N_DOFS*sizeof(target[1]));
     for (i=1; i<=N_DOFS; i++)
@@ -470,6 +485,8 @@ run_balance_task(void)
     break;
 
   case MOVE_RETURN_CENTER:
+
+    printf("move return center\n");
 
     // compute the update for the desired states
     for (i=1; i<=N_DOFS; ++i) {
@@ -498,7 +515,8 @@ run_balance_task(void)
   }
 
   // if ((MOVE_JOINT_TARGET_LIFT_UP != which_step) && (MOVE_JOINT_TARGET_LOWER_DOWN != which_step))
-  if (MOVE_JOINT_TARGET_LIFT_UP > which_step)
+  // if ((MOVE_JOINT_TARGET_LIFT_UP > which_step) || (MOVE_RETURN_CENTER == which_step))
+  if ((MOVE_JOINT_TARGET_LIFT_UP > which_step))
   {
       // this is a special inverse dynamics computation for a free standing robot
       inverseDynamicsFloat(delta_t, stat, TRUE, joint_des_state, NULL, NULL, fc);
