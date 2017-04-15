@@ -49,8 +49,8 @@ enum Steps {
   MOVE_TO_COG_TARGET_BASE,
   ASSIGN_JOINT_TARGET_LIFT_UP,
   MOVE_JOINT_TARGET_LIFT_UP,
-  MOVE_JOINT_TARGET_LEFT_DOWN,
-  ASSIGN_JOINT_TARGET_LEFT_DOWN
+  MOVE_JOINT_TARGET_LIFT_DOWN,
+  ASSIGN_JOINT_TARGET_LIFT_DOWN
 };
 
 // variables for COG control
@@ -452,12 +452,12 @@ run_balance_task(void)
     time_to_go -= delta_t;
 
     if (time_to_go <= 0) {
-      which_step = ASSIGN_JOINT_TARGET_LEFT_DOWN;
+      which_step = ASSIGN_JOINT_TARGET_LIFT_DOWN;
     }
 
     break;
 
-  case ASSIGN_JOINT_TARGET_LEFT_DOWN:
+  case ASSIGN_JOINT_TARGET_LIFT_DOWN:
 
     // initialize the target structure from the joint_des_state
     for (i=1; i<=N_DOFS; ++i) {
@@ -470,11 +470,11 @@ run_balance_task(void)
 
     time_to_go = duration;  // this may be too fast -- maybe a slower movement is better
 
-    which_step = MOVE_JOINT_TARGET_LEFT_DOWN;
+    which_step = MOVE_JOINT_TARGET_LIFT_DOWN;
 
     break;
 
-  case MOVE_JOINT_TARGET_LEFT_DOWN:
+  case MOVE_JOINT_TARGET_LIFT_DOWN:
 
     // compute the update for the desired states
     for (i=1; i<=N_DOFS; ++i) {
