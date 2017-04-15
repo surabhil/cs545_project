@@ -324,7 +324,7 @@ run_balance_task(void)
     cog_target.x[_Z_] = cart_des_state[RIGHT_FOOT].x[_Z_];
 # else
     cog_target.x[_X_] = 0.5 * (cart_des_state[LEFT_FOOT].x[_X_] + cart_des_state[RIGHT_FOOT].x[_X_]);
-    cog_target.x[_Y_] = 0.012;
+    cog_target.x[_Y_] = cart_des_state[RIGHT_FOOT].x[_Y_];
     cog_target.x[_Z_] = cart_des_state[RIGHT_FOOT].x[_Z_];
 #endif
     //cog_target.x[_Z_] = 0;
@@ -400,16 +400,20 @@ run_balance_task(void)
     }
 #if 1
     if (right_foot == 1) {
-      target[L_HAA].th -=  0.4;
-      target[L_AAA].th  =  0.5;
-      target[R_HAA].th -= 0.25;
-      target[R_AAA].th += 0.05;
+//      target[L_HAA].th -=  0.4;
+//      target[L_AAA].th  =  0.5;
+//      target[R_HAA].th -= 0.25;
+//      target[R_AAA].th += 0.05;
+      target[L_HFE].th += 1.0;
+      target[L_KFE].th += 0.5;
       right_foot = 0;
     } else {
-      target[R_HAA].th -=  0.35;
-      target[R_AAA].th  = -0.4;
-      target[L_HAA].th -= 0.2;
-      target[L_AAA].th -= 0.03;
+//      target[R_HAA].th -=  0.35;
+//      target[R_AAA].th  = -0.4;
+//      target[L_HAA].th -= 0.2;
+//      target[L_AAA].th -= 0.03;
+      target[R_HFE].th += 1.0;
+      target[R_KFE].th += 0.5;
       right_foot = 1;
     }
 
