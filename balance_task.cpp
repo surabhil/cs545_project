@@ -25,6 +25,7 @@ Remarks:
 #include "SL_man.h"
 
 // defines
+#define VERBOSE_LOG
 
 // local variables
 static double      start_time = 0.0;
@@ -223,7 +224,9 @@ run_balance_task(void)
     
   case ASSIGN_COG_TARGET:
 
+#ifdef VERBOSE_LOG
     printf("assign cog target\n");
+#endif
 
     // what is the target for the COG?
     bzero((void *)&cog_target,sizeof(cog_target));
@@ -252,7 +255,9 @@ run_balance_task(void)
 
   case MOVE_TO_COG_TARGET: // this is for inverse kinematics control
 
+#ifdef VERBOSE_LOG
     printf("move cog target\n");
+#endif
 
     // plan the next step of cog with min jerk
     for (i=1; i<=N_CART; ++i) {
@@ -314,7 +319,9 @@ run_balance_task(void)
 
   case ASSIGN_JOINT_TARGET_LIFT_UP:
 
+#ifdef VERBOSE_LOG
     printf("assign joint target lift up\n");
+#endif
 
     // initialize the target structure from the joint_des_state
     for (i=1; i<=N_DOFS; ++i)
@@ -376,7 +383,9 @@ run_balance_task(void)
 
   case MOVE_JOINT_TARGET_LIFT_UP:
 
+#ifdef VERBOSE_LOG
     printf("move joint target lift up\n");
+#endif
 
     // compute the update for the desired states
     for (i=1; i<=N_DOFS; ++i) {
@@ -406,7 +415,9 @@ run_balance_task(void)
 
   case ASSIGN_JOINT_TARGET_LOWER_DOWN:
 
+#ifdef VERBOSE_LOG
     printf("assign joint target lower down\n");
+#endif
 
     // initialize the target structure from the saved target with both legs
     // on the ground
@@ -424,7 +435,9 @@ run_balance_task(void)
 
   case MOVE_JOINT_TARGET_LOWER_DOWN:
 
+#ifdef VERBOSE_LOG
     printf("move joint target lower down\n");
+#endif
 
     // compute the update for the desired states
     for (i=1; i<=N_DOFS; ++i) {
@@ -469,7 +482,9 @@ run_balance_task(void)
 
   case ASSIGN_RETURN_CENTER:
 
+#ifdef VERBOSE_LOG
     printf("assign return center\n");
+#endif
 
     // prepare going to the default posture
     bzero((char *)&(target[1]),N_DOFS*sizeof(target[1]));
@@ -486,7 +501,9 @@ run_balance_task(void)
 
   case MOVE_RETURN_CENTER:
 
+#ifdef VERBOSE_LOG
     printf("move return center\n");
+#endif
 
     // compute the update for the desired states
     for (i=1; i<=N_DOFS; ++i) {
