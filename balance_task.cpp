@@ -25,7 +25,8 @@ Remarks:
 #include "SL_man.h"
 
 // defines
-#define VERBOSE_LOG
+// #define VERBOSE_LOG
+#define LOG
 
 // local variables
 static double      start_time = 0.0;
@@ -231,7 +232,7 @@ run_balance_task(void)
     
   case ASSIGN_COG_TARGET:
 
-#ifdef VERBOSE_LOG
+#if defined VERBOSE_LOG or defined LOG
     printf("assign cog target iter %d\n", iter);
 #endif
 
@@ -256,6 +257,10 @@ run_balance_task(void)
 
     // switch to next step of state machine
     which_step = MOVE_TO_COG_TARGET;
+
+#ifdef LOG
+    printf("move cog target iter %d\n", iter);
+#endif
 
     break;
 
@@ -325,7 +330,7 @@ run_balance_task(void)
 
   case ASSIGN_JOINT_TARGET_LIFT_UP:
 
-#ifdef VERBOSE_LOG
+#if defined VERBOSE_LOG or defined LOG
     printf("assign joint target lift up iter %d\n", iter);
 #endif
 
@@ -391,6 +396,10 @@ run_balance_task(void)
 
     which_step = MOVE_JOINT_TARGET_LIFT_UP;
 
+#ifdef LOG
+    printf("move joint target lift up iter %d\n", iter);
+#endif
+
     break;
 
   case MOVE_JOINT_TARGET_LIFT_UP:
@@ -427,7 +436,7 @@ run_balance_task(void)
 
   case ASSIGN_JOINT_TARGET_LOWER_DOWN:
 
-#ifdef VERBOSE_LOG
+#if defined VERBOSE_LOG or defined LOG
     printf("assign joint target lower down iter %d\n", iter);
 #endif
 
@@ -442,6 +451,10 @@ run_balance_task(void)
     time_to_go = duration_scale * duration;  // this may be too fast -- maybe a slower movement is better
 
     which_step = MOVE_JOINT_TARGET_LOWER_DOWN;
+
+#ifdef LOG
+    printf("move joint target lower down iter %d\n", iter);
+#endif
 
     break;
 
@@ -494,7 +507,7 @@ run_balance_task(void)
 
   case ASSIGN_RETURN_CENTER:
 
-#ifdef VERBOSE_LOG
+#if defined VERBOSE_LOG or defined LOG
     printf("assign return center iter %d\n", iter);
 #endif
 
@@ -508,6 +521,10 @@ run_balance_task(void)
 
     time_to_go = duration_scale * duration;  // this may be too fast -- maybe a slower movement is better
     which_step = MOVE_RETURN_CENTER;
+
+#ifdef LOG
+    printf("move return center iter %d\n", iter);
+#endif
 
     break;
 
