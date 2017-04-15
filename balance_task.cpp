@@ -233,11 +233,10 @@ run_balance_task(void)
 
     // where_cog for target when on right foot:
     // 0.054 ( 0.055)   y= 0.012 ( 0.014)   z=-0.119 (-0.117)
-
-    cog_target.x[_X_] =  (RIGHT_FOOT == balance_foot) ? 0.054 : -0.054;
+    cog_target.x[_X_] =  (RIGHT_FOOT == balance_foot) ? base_state.x[_X_] + 0.054 : base_state.x[_X_] + -0.054;
     // cog_target.x[_X_] =  (RIGHT_FOOT == balance_foot) ? 0.04 : -0.04;
-    cog_target.x[_Y_] =  0.012;
-    cog_target.x[_Z_] = -0.119;
+    cog_target.x[_Y_] =  base_state.x[_Y_] + 0.012;
+    cog_target.x[_Z_] =  base_state.x[_Z_] - 0.119;
 
     // the structure cog_des has the current position of the COG computed from the
     // joint_des_state of the robot. cog_des should track cog_traj
